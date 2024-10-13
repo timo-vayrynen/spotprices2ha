@@ -18,7 +18,7 @@ blueprint:
     rank:
       name: Number of hours
       description: How many of the cheapest hours the device should be turned on
-      default: 3
+      default: 12
       selector:
         number:
           min: 1
@@ -27,14 +27,14 @@ blueprint:
     price:
       name: Maximum price allowed
       description: What is the maximum price allowed?
-      default: 0.1
+      default: 10
       selector:
         number:
           min: -1
-          max: 4
+          max: 100
           step: "any"
           mode: box
-          unit_of_measurement: €/kWh
+          unit_of_measurement: c/kWh
     action_on:
       name: Action to perform when turning on
       description: List of actions that should be executed when Rank is less or equal to set Rank hours.
