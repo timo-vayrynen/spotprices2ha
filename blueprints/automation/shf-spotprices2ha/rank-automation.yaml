@@ -45,38 +45,32 @@ blueprint:
       description: List of actions that should be executed when Rank is grater than set Rank hours.
       selector:
         action:
-trigger_variables:
+
+variables:
   rank: !input rank
   price: !input price
   on_attribute: !input on_attribute
+
 trigger:
-  - platform: template
-    value_template: >
-      {% if on_attribute == "Price OK" %}
-        {{ states('sensor.shf_electricity_price_now') | float <= price | float }}
-      {% elif on_attribute == "Rank OK" %}
-        {{ states('sensor.shf_rank_now')|float <= rank | float }}
-      {% elif on_attribute == "Price or Rank OK" %}
-        {{ states('sensor.shf_electricity_price_now') | float <= price | float or states('sensor.shf_rank_now')|float <= rank | float }}
-      {% elif on_attribute == "Price and Rank OK" %}
-        {{ states('sensor.shf_electricity_price_now') | float <= price and states('sensor.shf_rank_now')|float <= rank | float }}
-      {% endif %}
-    id: turn-on
-  - platform: template
-    value_template: >
-      {% if on_attribute == "Price OK" %}
-        {{ states('sensor.shf_electricity_price_now') | float > price }}
-      {% elif on_attribute == "Rank OK" %}
-        {{ states('sensor.shf_rank_now')|float > rank }}
-      {% elif on_attribute == "Price or Rank OK" %}
-        {{ states('sensor.shf_electricity_price_now') | float > price and states('sensor.shf_rank_now')|float > rank }}
-      {% elif on_attribute == "Price and Rank OK" %}
-        {{ states('sensor.shf_electricity_price_now') | float > price or states('sensor.shf_rank_now')|float > rank }}
-      {% endif %}
-    id: turn-off
+  - platform: state
+    entity_id:
+      - sensor.shf_rank_now
+  - platform: state
+    entity_id:
+      - sensor.shf_electricity_price_now
+
 action:
   - if:
-      - condition: trigger
-        id: turn-on
+    - condition: template
+      value_template: |-
+        {% if on_attribute == "Price OK" %}
+          {{ states('sensor.shf_electricity_price_now') | float <= price | float }}
+        {% elif on_attribute == "Rank OK" %}
+          {{ states('sensor.shf_rank_now')|float <= rank | float }}
+        {% elif on_attribute == "Price or Rank OK" %}
+          {{ states('sensor.shf_electricity_price_now') | float <= price | float or states('sensor.shf_rank_now')|float <= rank | float }}
+        {% elif on_attribute == "Price and Rank OK" %}
+          {{ states('sensor.shf_electricity_price_now') | float <= price and states('sensor.shf_rank_now')|float <= rank | float }}
+        {% endif %}
     then: !input action_on
     else: !input action_off
